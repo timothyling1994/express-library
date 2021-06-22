@@ -9,10 +9,11 @@ var wiki = require('./routes/wiki.js');
 var usersRouter = require('./routes/users');
 var catalogRouter = require('./routes/catalog');
 
+require('dotenv').config();
 var app = express();
 
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb+srv://dbUser:1teiwmfUx0LwHPZT@cluster0.8ajla.mongodb.net/local_library?retryWrites=true&w=majority';
+var mongoDB = process.env.MONGODB_URL;
 mongoose.connect(mongoDB, { useNewUrlParser: true , useUnifiedTopology: true});
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
