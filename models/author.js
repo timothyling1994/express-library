@@ -10,7 +10,6 @@ var AuthorSchema = new Schema (
 		family_name:{type:String,required:true,maxLength:100},
 		date_of_birth: {type:Date},
 		date_of_death:{type:Date},
-
 	}
 );
 
@@ -33,7 +32,7 @@ AuthorSchema.virtual('check_date_of_death').get(function(){
 });
 
 AuthorSchema.virtual('url').get(function(){
-	return 'author/' + this._id;
+	return '/catalog/author/' + this._id;
 });
 
 module.exports = mongoose.model('Author',AuthorSchema);
