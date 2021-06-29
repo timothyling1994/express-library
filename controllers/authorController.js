@@ -159,9 +159,9 @@ exports.author_update_get = function(req, res) {
             }
             //console.log(DateTime.fromJSDate(results.author.date_of_birth).toLocaleString({ year: 'numeric', month: '2-digit', day: '2-digit' }));
             //console.log(DateTime.fromJSDate(results.author.date_of_birth).setLocale('zh').toLocaleString());
-            console.log(DateTime.fromJSDate(results.author.date_of_birth).toFormat('yyyy-MM-dd'));
-            let formatted_DOB = DateTime.fromJSDate(results.author.date_of_birth).toFormat('yyyy-MM-dd');
-            let formatted_DOD = DateTime.fromJSDate(results.author.date_of_death).toFormat('yyyy-MM-dd');
+            //console.log(DateTime.fromJSDate(results.author.date_of_birth).toFormat('yyyy-MM-dd'));
+            //let formatted_DOB = DateTime.fromJSDate(results.author.date_of_birth).toFormat('yyyy-MM-dd');
+            //let formatted_DOD = DateTime.fromJSDate(results.author.date_of_death).toFormat('yyyy-MM-dd');
 
             // Success.
             // Mark our selected genres as checked.
@@ -172,7 +172,7 @@ exports.author_update_get = function(req, res) {
                     }
                 }
             }*/
-            res.render('author_form', { title: 'Update Author', author: results.author, formatted_DOB:formatted_DOB, formatted_DOD:formatted_DOD});
+            res.render('author_form', { title: 'Update Author', author: results.author});
         });
 };
 

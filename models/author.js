@@ -27,8 +27,16 @@ AuthorSchema.virtual('check_date_of_birth').get(function(){
 	return this.date_of_birth ? DateTime.fromJSDate(this.date_of_birth).toLocaleString(DateTime.DATE_MED) : '';
 });
 
+AuthorSchema.virtual('formatted_DOB').get(function(){
+	return this.date_of_birth ? DateTime.fromJSDate(this.date_of_birth).toFormat('yyyy-MM-dd') : '';
+});
+
 AuthorSchema.virtual('check_date_of_death').get(function(){
 	return this.date_of_death ? DateTime.fromJSDate(this.date_of_death).toLocaleString(DateTime.DATE_MED): '';
+});
+
+AuthorSchema.virtual('formatted_DOD').get(function(){
+	return this.date_of_death ? DateTime.fromJSDate(this.date_of_death).toFormat('yyyy-MM-dd') : '';
 });
 
 AuthorSchema.virtual('url').get(function(){

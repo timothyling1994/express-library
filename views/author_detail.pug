@@ -3,7 +3,7 @@ extends layout
 block content
 
   h1 Author: #{author.name}
-  p #{author.check_date_of_birth} - #{author.check_date_of_death}
+  p (#{author.formatted_DOB}) - (#{author.formatted_DOD})
 
   div(style='margin-left:20px;margin-top:20px')
 
