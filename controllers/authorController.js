@@ -1,5 +1,7 @@
 const { body,validationResult } = require('express-validator');
 
+const {DateTime} = require('luxon');
+
 var Author = require('../models/author');
 var async = require('async');
 var Book = require('../models/book');
@@ -136,10 +138,85 @@ exports.author_delete_post = function(req, res, next) {
 
 // Display Author update form on GET.
 exports.author_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Author update GET');
+    async.parallel({
+        /*
+        books: function(callback) {
+            Book.find({'author':req.params.id}).populate('author').populate('genre').exec(callback);
+        },*/
+        author: function(callback) {
+            Author.findById(req.params.id).exec(callback);
+        },
+        /*
+        genres: function(callback) {
+            Genre.find(callback);
+        },*/
+        }, function(err, results) {
+            if (err) { return next(err); }
+            if (results.author==null) { // No results.
+                var err = new Error('Author not found');
+                err.status = 404;
+                return next(err);
+            }
+            //console.log(DateTime.fromJSDate(results.author.date_of_birth).toLocaleString({ year: 'numeric', month: '2-digit', day: '2-digit' }));
+            //console.log(DateTime.fromJSDate(results.author.date_of_birth).setLocale('zh').toLocaleString());
+            console.log(DateTime.fromJSDate(results.author.date_of_birth).toFormat('yyyy-MM-dd'));
+            let formatted_DOB = DateTime.fromJSDate(results.author.date_of_birth).toFormat('yyyy-MM-dd');
+            let formatted_DOD = DateTime.fromJSDate(results.author.date_of_death).toFormat('yyyy-MM-dd');
+
+            // Success.
+            // Mark our selected genres as checked.
+            /*for (var all_g_iter = 0; all_g_iter < results.genres.length; all_g_iter++) {
+                for (var book_g_iter = 0; book_g_iter < results.book.genre.length; book_g_iter++) {
+                    if (results.genres[all_g_iter]._id.toString()===results.book.genre[book_g_iter]._id.toString()) {
+                        results.genres[all_g_iter].checked='true';
+                    }
+                }
+            }*/
+            res.render('author_form', { title: 'Update Author', author: results.author, formatted_DOB:formatted_DOB, formatted_DOD:formatted_DOD});
+        });
 };
 
 // Handle Author update on POST.
-exports.author_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Author update POST');
-};
+exports.author_update_post = [
+
+    // Validate and santize fields.
+    body('first_name').trim().isLength({ min: 1 }).escape().withMessage('First name must be specified.')
+        .isAlphanumeric().withMessage('First name has non-alphanumeric characters.'),
+    body('family_name').trim().isLength({ min: 1 }).escape().withMessage('Family name must be specified.')
+        .isAlphanumeric().withMessage('Family name has non-alphanumeric characters.'),
+    body('date_of_birth', 'Invalid date of birth').optional({ checkFalsy: true }).isISO8601().toDate(),
+    body('date_of_death', 'Invalid date of death').optional({ checkFalsy: true }).isISO8601().toDate(),
+
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create Author object with escaped and trimmed data (and the old id!)
+        var author = new Author(
+            {
+                first_name: req.body.first_name,
+                family_name: req.body.family_name,
+                date_of_birth: req.body.date_of_birth,
+                date_of_death: req.body.date_of_death,
+                _id: req.params.id
+            }
+        );
+
+        if (!errors.isEmpty()) {
+            // There are errors. Render the form again with sanitized values and error messages.
+            res.render('author_form', { title: 'Update Author', author: author, errors: errors.array() });
+            return;
+        }
+        else {
+            // Data from form is valid. Update the record.
+            Author.findByIdAndUpdate(req.params.id, author, {}, function (err, theauthor) {
+                if (err) { return next(err); }
+                // Successful - redirect to genre detail page.
+                res.redirect(theauthor.url);
+            });
+        }
+    }
+];

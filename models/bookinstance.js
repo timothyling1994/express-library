@@ -18,6 +18,7 @@ BookInstanceSchema
 .virtual('url')
 .get(function () {
   return '/catalog/bookinstance/' + this._id;
+  //return '/catalog/bookinstance/' + this.book;
 });
 
 BookInstanceSchema.virtual('due_back_formatted').get(function(){
